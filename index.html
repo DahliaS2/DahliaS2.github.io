@@ -1,230 +1,392 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đơn Ứng Tuyển Thực Tập Sinh</title>
+    <title>Kawaii Capybara Racing</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Fredoka One', cursive;
         }
 
         body {
-            background-color: #f0f2f5;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            background: linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 100%);
+            cursor: none;
         }
 
-        .form-container {
-            background: white;
-            padding: 2rem;
+        #game {
+            width: 800px;
+            height: 600px;
+            background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 100%);
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid #fff;
+        }
+
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            animation: float 8s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(620px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .firework-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: explode var(--duration) ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y));
+                opacity: 0;
+            }
+        }
+
+        #car {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            bottom: 20px;
+            left: 380px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50,15 C30,15 15,30 15,50 C15,70 30,85 50,85 C70,85 85,70 85,50 C85,30 70,15 50,15 Z" fill="%23815B41"/><path d="M35,40 C32,40 30,42 30,45 C30,48 32,50 35,50 C38,50 40,48 40,45 C40,42 38,40 35,40 Z" fill="black"/><path d="M65,40 C62,40 60,42 60,45 C60,48 62,50 65,50 C68,50 70,48 70,45 C70,42 68,40 65,40 Z" fill="black"/><path d="M50,55 C45,55 40,60 40,65 C40,70 45,75 50,75 C55,75 60,70 60,65 C60,60 55,55 50,55 Z" fill="%236B4B35"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 10;
+            transition: transform 0.3s;
+        }
+
+        .obstacle {
+            position: absolute;
+            background: rgba(255, 105, 180, 0.8);
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(255,105,180,0.3);
+            backdrop-filter: blur(2px);
         }
 
-        .form-title {
-            font-size: 1.5rem;
-            color: #1a1a1a;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
+        .obstacle.moving {
+            background: rgba(255, 20, 147, 0.8);
+            border: 2px solid rgba(255,255,255,0.5);
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 100;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-weight: 500;
+        .hud-item {
+            padding: 8px 16px;
+            background: #ff69b4;
+            border-radius: 20px;
+            color: white;
+            font-size: 18px;
+            min-width: 120px;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
+        #cursor {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #cursor::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.95);
+            padding: 30px 50px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid #ff69b4;
+        }
+
+        #gameOver h2 {
+            color: #ff69b4;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .form-input:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .checkbox-group {
-            margin-top: 0.5rem;
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-
-        .checkbox-container:hover {
-            background-color: #f3f4f6;
-        }
-
-        .checkbox-input {
-            width: 18px;
-            height: 18px;
-            margin-right: 0.75rem;
-            cursor: pointer;
-        }
-
-        .checkbox-label {
-            color: #4b5563;
-            font-size: 1rem;
-        }
-
-        .error-message {
-            display: none;
-            background-color: #fee2e2;
-            border-left: 4px solid #ef4444;
-            color: #b91c1c;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 4px;
-        }
-
-        .submit-button {
-            background-color: #2563eb;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            width: 100%;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .submit-button:hover {
-            background-color: #1d4ed8;
-        }
-
-        .submit-button:active {
-            background-color: #1e40af;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .form-container {
-                padding: 1.5rem;
-            }
+        button:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2 class="form-title">Ứng tuyển vị trí thực tập sinh</h2>
-        <form id="internshipForm" onsubmit="return validateForm(event)">
-            <div class="form-group">
-                <label for="fullName" class="form-label">Họ và tên</label>
-                <input 
-                    type="text" 
-                    id="fullName" 
-                    name="fullName" 
-                    class="form-input"
-                    required
-                    placeholder="Nhập họ và tên của bạn"
-                >
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Tùy chọn đãi ngộ</label>
-                <div class="checkbox-group">
-                    <label class="checkbox-container">
-                        <input 
-                            type="radio" 
-                            name="internshipType" 
-                            value="paid" 
-                            class="checkbox-input"
-                            onclick="handleOptionChange(this)"
-                        >
-                        <span class="checkbox-label">Thực tập sinh có lương</span>
-                    </label>
-
-                    <label class="checkbox-container">
-                        <input 
-                            type="radio" 
-                            name="internshipType" 
-                            value="stipend" 
-                            class="checkbox-input"
-                            onclick="handleOptionChange(this)"
-                        >
-                        <span class="checkbox-label">Thực tập sinh có trợ cấp</span>
-                    </label>
-
-                    <label class="checkbox-container">
-                        <input 
-                            type="radio" 
-                            name="internshipType" 
-                            value="unpaid" 
-                            class="checkbox-input"
-                            onclick="handleOptionChange(this)"
-                        >
-                        <span class="checkbox-label">Thực tập sinh không lương</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="errorMessage" class="error-message">
-                Thông báo: Bạn phải chọn Thực tập sinh không lương.
-            </div>
-
-            <button type="submit" class="submit-button">
-                Gửi đơn ứng tuyển
-            </button>
-        </form>
+    <div id="game">
+        <div id="hud">
+            <div class="hud-item" id="score">Điểm: 0</div>
+            <div class="hud-item" id="speed">Tốc độ: 3x</div>
+            <div class="hud-item" id="level">Level: 3</div>
+        </div>
+        <div id="car"></div>
+        <div id="cursor"></div>
+        <div id="gameOver">
+            <h2>Thua Òi, Cay Hông!?</h2>
+            <div id="finalScore">Điểm: 0</div>
+            <button onclick="restartGame()">!! Gà !!</button>
+        </div>
     </div>
 
     <script>
-        function handleOptionChange(radio) {
-            const errorMessage = document.getElementById('errorMessage');
-            if (radio.value === 'paid' || radio.value === 'stipend') {
-                errorMessage.style.display = 'block';
-            } else {
-                errorMessage.style.display = 'none';
-            }
+        const game = document.getElementById('game');
+        const car = document.getElementById('car');
+        const cursor = document.getElementById('cursor');
+
+        let state = {
+            score: 0,
+            speed: 15,
+            isGameOver: false,
+            mouseX: 380,
+            carX: 380,
+            obstacles: [],
+            level: 3
+        };
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = ['❤️', '💖', '💗', '💓'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * (game.clientWidth - 20) + 'px';
+            heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+            game.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
         }
 
-        function validateForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            const selectedOption = form.querySelector('input[name="internshipType"]:checked');
+        function createFirework(x, y) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = x + 'px';
+            firework.style.top = y + 'px';
+            game.appendChild(firework);
+
+            const colors = ['#ff69b4', '#ff1493', '#ffd700', '#ff6b6b', '#4dc4ff'];
+            const particles = 30;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework-particle';
+                
+                const angle = (i * 360) / particles;
+                const velocity = 2 + Math.random() * 2;
+                const rad = angle * Math.PI / 180;
+                const x = Math.cos(rad) * 100 * velocity;
+                const y = Math.sin(rad) * 100 * velocity;
+
+                particle.style.backgroundColor = color;
+                particle.style.setProperty('--x', x + 'px');
+                particle.style.setProperty('--y', y + 'px');
+                particle.style.setProperty('--duration', '1s');
+
+                firework.appendChild(particle);
+            }
+
+            setTimeout(() => firework.remove(), 1000);
+        }
+
+        setInterval(createHeart, 500);
+
+        game.addEventListener('mousemove', (e) => {
+            const rect = game.getBoundingClientRect();
+            cursor.style.left = (e.clientX - rect.left) + 'px';
+            cursor.style.top = (e.clientY - rect.top) + 'px';
+            state.mouseX = Math.max(0, Math.min(750, e.clientX - rect.left - 25));
+        });
+
+        function createObstacle() {
+            if (state.isGameOver) return;
+
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle';
+            const isMoving = Math.random() < 0.4;
+            if (isMoving) obstacle.classList.add('moving');
+
+            const size = Math.random() * 30 + 30;
+            const left = Math.random() * (800 - size);
             
-            if (!selectedOption) {
-                alert('Vui lòng chọn một loại thực tập sinh');
-                return false;
-            }
+            obstacle.style.width = size + 'px';
+            obstacle.style.height = size + 'px';
+            obstacle.style.left = left + 'px';
+            obstacle.style.top = '-50px';
+            
+            game.appendChild(obstacle);
 
-            if (selectedOption.value !== 'unpaid') {
-                return false;
-            }
-
-            // Thực hiện submit form khi chọn đúng option
-            alert('Đơn ứng tuyển đã được gửi thành công!');
-            form.reset();
-            return true;
+            state.obstacles.push({
+                element: obstacle,
+                x: left,
+                y: -50,
+                size,
+                isMoving,
+                speed: Math.random() * 0.5 + 1,
+                moveDirection: Math.random() < 0.5 ? -1 : 1
+            });
         }
+
+        function updateGame() {
+            if (state.isGameOver) return;
+
+            state.carX += (state.mouseX - state.carX) * 0.1;
+            car.style.left = state.carX + 'px';
+
+            for (let i = state.obstacles.length - 1; i >= 0; i--) {
+                const obs = state.obstacles[i];
+                obs.y += state.speed * obs.speed;
+                
+                if (obs.isMoving) {
+                    obs.x += Math.sin(obs.y * 0.05) * 4 * obs.moveDirection;
+                }
+
+                obs.element.style.top = obs.y + 'px';
+                obs.element.style.left = obs.x + 'px';
+
+                const carRect = car.getBoundingClientRect();
+                const obsRect = obs.element.getBoundingClientRect();
+                
+                if (!(carRect.right < obsRect.left || 
+                    carRect.left > obsRect.right || 
+                    carRect.bottom < obsRect.top || 
+                    carRect.top > obsRect.bottom)) {
+                    gameOver();
+                    return;
+                }
+
+                if (obs.y > 600) {
+                    obs.element.remove();
+                    state.obstacles.splice(i, 1);
+                    state.score += 10;
+                    document.getElementById('score').textContent = 'Điểm: ' + state.score;
+
+                    if (state.score % 100 === 0) {
+                        state.level = Math.min(10, state.level + 1);
+                        state.speed += 1.5;
+                        document.getElementById('speed').textContent = 
+                            'Tốc độ: ' + (state.speed / 15).toFixed(1) + 'x';
+                        document.getElementById('level').textContent = 
+                            'Level: ' + state.level;
+                    }
+                }
+            }
+
+            requestAnimationFrame(updateGame);
+        }
+
+        function gameOver() {
+            state.isGameOver = true;
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalScore').textContent = 'Điểm: ' + state.score;
+
+            // Create multiple fireworks
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * (game.clientWidth - 100) + 50;
+                    const y = Math.random() * (game.clientHeight - 100) + 50;
+                    createFirework(x, y);
+                }, i * 300);
+            }
+        }
+
+        function restartGame() {
+            state.obstacles.forEach(obs => obs.element.remove());
+            
+            state = {
+                score: 0,
+                speed: 15,
+                isGameOver: false,
+                mouseX: 380,
+                carX: 380,
+                obstacles: [],
+                level: 3
+            };
+
+            car.style.left = '380px';
+            document.getElementById('score').textContent = 'Điểm: 0';
+            document.getElementById('speed').textContent = 'Tốc độ: 3x';
+            document.getElementById('level').textContent = 'Level: 3';
+            document.getElementById('gameOver').style.display = 'none';
+        }
+
+        setInterval(createObstacle, 600);
+        updateGame();
     </script>
 </body>
 </html>
