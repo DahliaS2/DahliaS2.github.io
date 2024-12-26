@@ -1,304 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn Ứng Tuyển Thực Tập Sinh</title>
     <style>
-        html, body {
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            width: 100%;
-            background: #444444;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
+            background-color: #f0f2f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
-        }
-
-        .container {
-            background-color: white;
-            width: 100%;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
-            box-sizing: border-box;
-            animation: fadeIn 0.5s ease-out;
-            position: relative;
         }
 
-        /* Thêm styles cho scroll text */
-        .scroll-text {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            overflow: hidden;
-            background: #f8f9fa;
-            padding: 10px 0;
-        }
-
-        .scroll-text p {
-            white-space: nowrap;
-            margin: 0;
-            color: #007bff;
-            font-size: 16px;
-            animation: scrollText 15s linear infinite;
-            padding-left: 100%;
-        }
-
-        @keyframes scrollText {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-200%);
-            }
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                max-width: 400px;
-                min-height: auto;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                margin: 20px;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            color: #333;
-            font-size: clamp(20px, 5vw, 24px);
-            margin-bottom: 20px;
-            text-align: center;
-            margin-top: 60px; /* Thêm margin-top để không bị che bởi scroll text */
-        }
-
-        .input-group {
-            width: 100%;
-            max-width: 300px;
-            margin: 20px 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555;
-            font-size: clamp(14px, 4vw, 16px);
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: clamp(14px, 4vw, 16px);
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.2s, background-color 0.3s;
-            width: 100%;
-            max-width: 300px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        .popup {
+        .form-container {
             background: white;
-            padding: 20px;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 300px;
-            text-align: center;
-            position: relative;
-            animation: popupIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
-        @keyframes popupIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .close-popup {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 24px;
+        .checkbox-group {
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
             cursor: pointer;
-            color: #666;
-            padding: 8px;
-            width: auto;
-            max-width: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
         }
 
-        .popup-content {
-            margin: 20px 0;
-            font-size: clamp(16px, 4vw, 18px);
-            color: #333;
-            word-wrap: break-word;
+        .checkbox-container:hover {
+            background-color: #f3f4f6;
         }
 
-        .firework {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            pointer-events: none;
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.75rem;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: #4b5563;
+            font-size: 1rem;
+        }
+
+        .error-message {
+            display: none;
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #b91c1c;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+
+        .submit-button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .submit-button:active {
+            background-color: #1e40af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="scroll-text">
-            <p> <strong> 🔥 Dành Cho Các Bạn IQ cao và thật sự thông minh sẽ nhìn thấy các tâm hồn </strong> 💞💞 </p>
-        </div>
-        <h1>Máy tính tuổi thông minh</h1>
-        <div class="input-group">
-            <label>Nhập tuổi của bạn</label>
-            <input type="number" id="ageInput" placeholder="Nhập tuổi">
-        </div>
-        <button onclick="calculateAge()">Tính tuổi của bạn</button>
-    </div>
+    <div class="form-container">
+        <h2 class="form-title">Ứng tuyển vị trí thực tập sinh</h2>
+        <form id="internshipForm" onsubmit="return validateForm(event)">
+            <div class="form-group">
+                <label for="fullName" class="form-label">Họ và tên</label>
+                <input 
+                    type="text" 
+                    id="fullName" 
+                    name="fullName" 
+                    class="form-input"
+                    required
+                    placeholder="Nhập họ và tên của bạn"
+                >
+            </div>
 
-    <div class="popup-overlay" id="popupOverlay">
-        <div class="popup">
-            <button class="close-popup" onclick="closePopup()">×</button>
-            <div class="popup-content" id="popupContent"></div>
-        </div>
+            <div class="form-group">
+                <label class="form-label">Tùy chọn đãi ngộ</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-container">
+                        <input 
+                            type="radio" 
+                            name="internshipType" 
+                            value="paid" 
+                            class="checkbox-input"
+                            onclick="handleOptionChange(this)"
+                        >
+                        <span class="checkbox-label">Thực tập sinh có lương</span>
+                    </label>
+
+                    <label class="checkbox-container">
+                        <input 
+                            type="radio" 
+                            name="internshipType" 
+                            value="stipend" 
+                            class="checkbox-input"
+                            onclick="handleOptionChange(this)"
+                        >
+                        <span class="checkbox-label">Thực tập sinh có trợ cấp</span>
+                    </label>
+
+                    <label class="checkbox-container">
+                        <input 
+                            type="radio" 
+                            name="internshipType" 
+                            value="unpaid" 
+                            class="checkbox-input"
+                            onclick="handleOptionChange(this)"
+                        >
+                        <span class="checkbox-label">Thực tập sinh không lương</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message">
+                Thông báo: Bạn phải chọn Thực tập sinh không lương.
+            </div>
+
+            <button type="submit" class="submit-button">
+                Gửi đơn ứng tuyển
+            </button>
+        </form>
     </div>
 
     <script>
-        function createFirework(x, y) {
-            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        function handleOptionChange(radio) {
+            const errorMessage = document.getElementById('errorMessage');
+            if (radio.value === 'paid' || radio.value === 'stipend') {
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            const selectedOption = form.querySelector('input[name="internshipType"]:checked');
             
-            for (let i = 0; i < 30; i++) {
-                const firework = document.createElement('div');
-                firework.className = 'firework';
-                firework.style.left = x + 'px';
-                firework.style.top = y + 'px';
-                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                const angle = (i * 12) * Math.PI / 180;
-                firework.style.transform = `rotate(${angle}deg)`;
-                
-                document.body.appendChild(firework);
-                
-                firework.animate([
-                    { transform: `translate(0, 0)` },
-                    { 
-                        transform: `translate(${Math.cos(angle) * 100}px, ${Math.sin(angle) * 100}px)`,
-                        opacity: 0 
-                    }
-                ], {
-                    duration: 1000,
-                    easing: 'ease-out',
-                    fill: 'forwards'
-                });
-
-                setTimeout(() => {
-                    firework.remove();
-                }, 1000);
+            if (!selectedOption) {
+                alert('Vui lòng chọn một loại thực tập sinh');
+                return false;
             }
-        }
 
-        function calculateAge() {
-            const age = document.getElementById('ageInput').value;
-            if (age) {
-                document.getElementById('popupContent').textContent = `Bạn đã ${age} tuổi rồi.`;
-                document.getElementById('popupOverlay').style.display = 'flex';
-                
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        const x = Math.random() * window.innerWidth;
-                        const y = Math.random() * (window.innerHeight / 2);
-                        createFirework(x, y);
-                    }, i * 200);
-                }
+            if (selectedOption.value !== 'unpaid') {
+                return false;
             }
+
+            // Thực hiện submit form khi chọn đúng option
+            alert('Đơn ứng tuyển đã được gửi thành công!');
+            form.reset();
+            return true;
         }
-
-        function closePopup() {
-            document.getElementById('popupOverlay').style.display = 'none';
-        }
-
-        document.getElementById('popupOverlay').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePopup();
-            }
-        });
-
-        // Fix for mobile viewport height
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-        window.addEventListener('resize', () => {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        });
     </script>
 </body>
 </html>
